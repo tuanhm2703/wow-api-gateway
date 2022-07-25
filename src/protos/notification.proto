@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc SendForgetPwd (SendForgetPwdReq) returns (Ok);
+  rpc SendVerifyEmail (SendVerifyEmailReq) returns (Ok);
+}
+
+message Ok {
+}
+
+message SendForgetPwdReq {
+  string resetLink = 1;
+  string email = 2;
+}
+
+message SendVerifyEmailReq {
+  string url = 1;
+  string emailAddress = 2;
+  string username = 3;
+  string lang = 4;
+}
