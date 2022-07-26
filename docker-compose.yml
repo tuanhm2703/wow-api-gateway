@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+
+  # mariadb:
+  #   image: mariadb:latest
+  #   ports:
+  #    - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: thanh123
+  #     MYSQL_DATABASE: vhppdev-auth
+  #     MYSQL_USER: dev
+  #     MYSQL_PASSWORD: dev
+  #   volumes:
+  #     - mariadb_data:/var/lib/mysql
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - 8080:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=wow2022
+
+  # mongo:
+  #   image: mongo:latest
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: "root"
+  #     MONGO_INITDB_ROOT_PASSWORD: "thanh123"
+  #   volumes:
+  #     - "mongo_data:/data/db"
+  #   ports:
+  #     - "27017:27017"
+
+
+  # mongoexpress:
+  #   depends_on:
+  #     - mongo
+  #   image: mongo-express:latest
+  #   environment: 
+  #     # ME_CONFIG_BASICAUTH_USERNAME: "admin"
+  #     # ME_CONFIG_BASICAUTH_PASSWORD: "thanh123"
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: "thanh123"
+  #     ME_CONFIG_MONGODB_SERVER: "mongo"
+  #     VCAP_APP_PORT: 8082
+  #   ports:
+  #     - "8082:8082"
+  #   restart: always
+
+  redis:
+    image: "redis:alpine"
+    command:
+      - "redis-server"
+      - "--appendonly yes"
+      - "--requirepass devredis"
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+  redis-commander:
+    depends_on:
+      - redis
+    image: rediscommander/redis-commander:latest
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: devredis
+      URL_PREFIX: /redis
+      TRUST_PROXY: "true"
+    ports:
+      - 8081:8081
+
+  # s3_storage:
+  #   image: minio/minio:RELEASE.2021-03-04T00-53-13Z
+  #   volumes:
+  #     - s3_data:/data
+  #   ports:
+  #     - target: 9000
+  #       published: 9000
+  #       protocol: tcp
+  #       mode: host
+  #   expose:
+  #     - "9000"
+  #   environment:
+  #     MINIO_ROOT_USER: dev
+  #     MINIO_ROOT_PASSWORD: Test1234
+  #   command: server /data
+
+  nats:
+    image: nats:2-alpine
+    command: --name vhpp01 --cluster_name vhpp --jetstream --store_dir /data
+    ports:
+      - 8222:8222
+      - 4222:4222
+    volumes:
+      - nats_data:/data
+
+# networks:
+#   default:
+#     external:
+#       name: suhie
+
+volumes:
+  # mariadb_data:
+  #   driver: local
+  postgresql_data:
+    driver: local
+  # mongo_data:
+  #   driver: local
+  redis_data:
+    driver: local
+  nats_data:
+    driver: local
+  s3_data:
+    driver: local
