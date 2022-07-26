@@ -3,7 +3,7 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { nats } from '../config';
-import User from '@wow/models/user.model';
+import User from '@wow/models/account.model';
 import { AppAccountsController } from './app-accounts.controller';
 
 @Module({

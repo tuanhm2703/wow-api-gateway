@@ -5,6 +5,7 @@ import {
   Post,
   Body,
   BadRequestException,
+  Get,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
@@ -27,15 +28,14 @@ export class AppAccountsController {
     try {
       const data = await firstValueFrom(this.natsService.send('account.create', acc));
 
-      // Send verify email
+      // Send verify otp
       const tokens = data.tokens;
-
       if (Array.isArray(tokens) && tokens.length) {
         let token = tokens[0];
 
-        await this.accountQueue.add('sendVerifyEmail', {
+        await this.accountQueue.add('sendVerifyOtp', {
           token: token.token,
-          account: data
+          phone: data.phone
         }, {
           removeOnComplete: true,
         });

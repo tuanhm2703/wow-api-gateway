@@ -1,12 +1,12 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity()
 export  default class Account {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ length: 255 })
   id: string;
 
   @Column()

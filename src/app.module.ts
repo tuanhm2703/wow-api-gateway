@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
@@ -39,7 +39,9 @@ import { AccountProcessor } from './processors';
       }),
       inject: [ConfigService],
     }),
-    ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_GRPC'])),
+    // ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_GRPC'])),
+
+    ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_NATS'])),
 
     CoreModule.forRootAsync(),
     SharedModule,

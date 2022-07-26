@@ -1,43 +1,28 @@
 import { Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, ClientNats } from '@nestjs/microservices';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { firstValueFrom } from 'rxjs';
 import { NotificationGrpcService } from '../interfaces';
+import { NatsClient } from '@nestjs-ex/nats-strategy';
 
 @Processor('account')
 export class AccountProcessor {
   private readonly logger = new Logger(AccountProcessor.name);
 
-  private notificationService: NotificationGrpcService;
-
   constructor(
-    @Inject('NOTIFICATION_SERVICE_GRPC') private notificationGrpc: ClientGrpc,
-    private readonly configService: ConfigService,
-  ) {
-    this.notificationService = this.notificationGrpc.getService<NotificationGrpcService>(
-      'NotificationService',
-    );
-  }
+    @Inject('NOTIFICATION_SERVICE_NATS') private notificationNats: ClientNats,
+  ) {}
 
-  @Process('sendVerifyEmail')
+  @Process('sendVerifyOtp')
   async sendVerifyEmail(job: Job) {
     const data = job.data;
-    this.logger.log(`==== Executing [account][sendVerifyEmail][${job.id}] ====`)
+    this.logger.log(`==== Executing [account][sendVerifyOtp][${job.id}] ====`)
 
-    // const { account, token } = await this.accountsService.forgotPassword({ email }).toPromise();
-    const { account, token, lang } = data;
-    console.log('sendVerifyEmail', account.emailAddress, token);
+    const { phone, token } = data;
+    console.log('sendVerifyOtp', phone, token);
 
-    const oidc = this.configService.get('oidc');
-    const url = `${oidc.issuer}auth/verify-email?u=${account.username}&token=${token}`;
-
-    await firstValueFrom(this.notificationService.sendVerifyEmail({
-      url,
-      emailAddress: account.emailAddress,
-      username: account.username,
-      lang: lang || 'en'
-    }));
+    await firstValueFrom(this.notificationNats.send('notification.verifyOtp', { phone, otp: token }));
   }
 }

@@ -49,6 +49,13 @@ export const load = () => {
         },
       },
     } as ClientProvider,
+
+    NOTIFICATION_SERVICE_NATS: {
+      transport: Transport.NATS,
+      options: {
+        servers: natsServers,
+      },
+    } as ClientProvider,
   };
 };
 
