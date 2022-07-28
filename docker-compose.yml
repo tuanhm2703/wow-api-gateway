@@ -30,6 +30,13 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=wow2022
 
+  mail:
+    image: maildev/maildev
+    restart: always
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
   # mongo:
   #   image: mongo:latest
   #   restart: always

@@ -23,6 +23,6 @@ export class AccountProcessor {
     const { phone, token } = data;
     console.log('sendVerifyOtp', phone, token);
 
-    await firstValueFrom(this.notificationNats.send('notification.verifyOtp', { phone, otp: token }));
+    await firstValueFrom(this.notificationNats.send('notification.sendOTP', { phone, otp: token }));
   }
 }
