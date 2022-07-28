@@ -15,7 +15,7 @@ import { AccountProcessor } from './processors';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configs.load]
+      load: [configs.load],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -35,13 +35,15 @@ import { AccountProcessor } from './processors';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        redis: configService.get('redis')
+        redis: configService.get('redis'),
       }),
       inject: [ConfigService],
     }),
     // ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_GRPC'])),
 
-    ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_NATS'])),
+    ClientsModule.registerAsync(
+      configs.grpcClients(['NOTIFICATION_SERVICE_NATS']),
+    ),
 
     CoreModule.forRootAsync(),
     SharedModule,
@@ -51,8 +53,6 @@ import { AccountProcessor } from './processors';
   controllers: [
     // PageController,
   ],
-  providers: [
-    AccountProcessor,
-  ],
+  providers: [AccountProcessor],
 })
-export class AppModule { }
+export class AppModule {}
