@@ -13,6 +13,7 @@ import { NatsClient } from '@nestjs-ex/nats-strategy';
 import { Queue } from 'bull';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { firstValueFrom } from 'rxjs';
+import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -47,5 +48,12 @@ export class AppAccountsController {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  @Post('verify-otp')
+  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
+    const data = await firstValueFrom(this.natsService.send('account.verifyOtp', payload));
+    console.log("line 56 - data", data);
+    return data;
   }
 }
