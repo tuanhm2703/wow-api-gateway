@@ -22,6 +22,19 @@ export const load = () => {
       servers: natsServers,
     },
 
+    s3: {
+      endPoint: env.WOW_S3_HOST || 'localhost',
+      port: env.WOW_S3_PORT ? parseInt(env.WOW_S3_PORT, 10) : 9000,
+      useSSL: getBoolOrDefault(env.WOW_S3_USE_SSL, false),
+      accessKey: env.WOW_S3_ACCESS_KEY || 'testKey',
+      secretKey: env.WOW_S3_SECRET_KEY || 'testSecretKey',
+      region: env.WOW_S3_REGION || 'us-east-1',
+
+      defaultBucket: env.WOW_S3_DEFAULT_BUCKET || '0a7d55be',
+      defaultPublicPrefix: env.WOW_S3_DEFAULT_PUBLIC_PREFIX || 'public/',
+      defaultPrivatePrefix: env.WOW_S3_DEFAULT_PRIVATE_PREFIX || 'private/',
+    },
+
     db: {
       host: env.WOW_DB_HOST || '192.168.1.4',
       port: env.WOW_DB_PORT ? parseInt(env.WOW_DB_PORT, 10) : 8529,
@@ -65,6 +78,13 @@ export const nats = () =>
     useFactory: (configService: ConfigService) => configService.get('nats'),
     inject: [ConfigService],
   } as NatsClientModuleAsyncOptions);
+
+export const minio = () =>
+  ({
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) => configService.get('s3'),
+    inject: [ConfigService],
+  });
 
 export const grpcClients = (clientNames: string[]) =>
   clientNames.map(

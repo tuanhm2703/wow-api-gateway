@@ -11,6 +11,7 @@ import { AccountsModule } from './accounts/accounts.module';
 import { MeModule } from './me/me.module';
 // import { PageController } from './controllers/page.controller';
 import { AccountProcessor } from './processors';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { AccountProcessor } from './processors';
     SharedModule,
     AccountsModule,
     MeModule,
+    MediaModule
   ],
   controllers: [
     // PageController,
