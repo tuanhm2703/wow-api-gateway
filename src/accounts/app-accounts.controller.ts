@@ -18,6 +18,7 @@ import { first, firstValueFrom } from 'rxjs';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountGuard } from '@wow/auth/guards/account.guard';
 import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
+import { CheckUsernameDto } from './dto/check-username.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -71,6 +72,18 @@ export class AppAccountsController {
       throw new BadRequestException(error.message);
     }
   }
+  @Post('/exists')
+  @HttpCode(HttpStatus.OK)
+  async checkValidUsername(@Body() body: CheckUsernameDto) {
+    try {
+      const data = await firstValueFrom(
+        this.natsService.send('account.exists', body),
+      );
+      return data;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
   @UseGuards(AccountGuard)
   @Get('/profile/general')
   @HttpCode(HttpStatus.OK)
@@ -87,8 +100,10 @@ export class AppAccountsController {
 
   @Post('verify-otp')
   async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
-    const data = await firstValueFrom(this.natsService.send('account.verifyOtp', payload));
-    console.log("line 56 - data", data);
+    const data = await firstValueFrom(
+      this.natsService.send('account.verifyOtp', payload),
+    );
+    console.log('line 56 - data', data);
     return data;
   }
 }
