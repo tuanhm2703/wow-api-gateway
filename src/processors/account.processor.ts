@@ -18,11 +18,16 @@ export class AccountProcessor {
   @Process('sendVerifyOtp')
   async sendVerifyEmail(job: Job) {
     const data = job.data;
-    this.logger.log(`==== Executing [account][sendVerifyOtp][${job.id}] ====`)
+    this.logger.log(`==== Executing [account][sendVerifyOtp][${job.id}] ====`);
 
     const { phone, token } = data;
     console.log('sendVerifyOtp', phone, token);
 
-    await firstValueFrom(this.notificationNats.send('notification.verifyOtp', { phone, otp: token }));
+    await firstValueFrom(
+      this.notificationNats.send('notification.verifyOtp', {
+        phone,
+        otp: token,
+      }),
+    );
   }
 }

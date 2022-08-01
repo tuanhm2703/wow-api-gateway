@@ -6,14 +6,17 @@ import {
   Body,
   BadRequestException,
   Get,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
 import { NatsClient } from '@nestjs-ex/nats-strategy';
 import { Queue } from 'bull';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { firstValueFrom } from 'rxjs';
+import { first, firstValueFrom } from 'rxjs';
 import { LoginAccountDto } from './dto/login-account.dto';
+import { AccountGuard } from '@wow/auth/guards/account.guard';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -65,6 +68,19 @@ export class AppAccountsController {
       return data;
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+  @UseGuards(AccountGuard)
+  @Get('/profile/general')
+  @HttpCode(HttpStatus.OK)
+  async getGeneralProfileAccount(@Request() req) {
+    try {
+      const data = await firstValueFrom(
+        this.natsService.send('account.profile.general', req.user),
+      );
+      return data;
+    } catch (error) {
+      return error;
     }
   }
 }
