@@ -17,6 +17,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { first, firstValueFrom } from 'rxjs';
 import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountGuard } from '@wow/auth/guards/account.guard';
+import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -82,5 +83,12 @@ export class AppAccountsController {
     } catch (error) {
       return error;
     }
+  }
+
+  @Post('verify-otp')
+  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
+    const data = await firstValueFrom(this.natsService.send('account.verifyOtp', payload));
+    console.log("line 56 - data", data);
+    return data;
   }
 }
