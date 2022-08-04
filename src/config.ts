@@ -1,18 +1,27 @@
 import { NatsClientModuleAsyncOptions } from '@nestjs-ex/nats-strategy';
 import { BullModuleAsyncOptions, BullModuleOptions } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientProvider, ClientsProviderAsyncOptions, Transport } from '@nestjs/microservices';
+import {
+  ClientProvider,
+  ClientsProviderAsyncOptions,
+  Transport,
+} from '@nestjs/microservices';
 import { join } from 'path';
 import * as Redis from 'ioredis';
 
-const getBoolOrDefault = (value: string, defaultValue: boolean) => (value ? value === 'true' : defaultValue);
+const getBoolOrDefault = (value: string, defaultValue: boolean) =>
+  value ? value === 'true' : defaultValue;
 
 export const load = () => {
   const env = process.env;
-  const port = env.WOW_PORT ? parseInt(env.WOW_PORT, 10) : (
-    env.PORT ? parseInt(env.PORT, 10) : 3000
-  );
-  const natsServers = (env.WOW_NATS_SERVERS || '192.168.1.4:4222').split(',').map((serv) => serv.trim());
+  const port = env.WOW_PORT
+    ? parseInt(env.WOW_PORT, 10)
+    : env.PORT
+    ? parseInt(env.PORT, 10)
+    : 3000;
+  const natsServers = (env.WOW_NATS_SERVERS || '192.168.1.4:4222')
+    .split(',')
+    .map((serv) => serv.trim());
 
   return {
     isProduction: env.NODE_ENV === 'production',
@@ -42,7 +51,6 @@ export const load = () => {
       password: env.WOW_DB_PASSWORD || 'dev',
       database: env.WOW_DB_DATABASE || 'vhppdev',
     },
-    
 
     redis: {
       host: env.WOW_REDIS_HOST || 'localhost',
@@ -92,7 +100,8 @@ export const grpcClients = (clientNames: string[]) =>
       ({
         name: clientName,
         imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => configService.get<any>(clientName),
+        useFactory: async (configService: ConfigService) =>
+          configService.get<any>(clientName),
         inject: [ConfigService],
       } as ClientsProviderAsyncOptions),
   );

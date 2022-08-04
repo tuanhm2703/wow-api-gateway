@@ -3,9 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     export interface Request {
-      user?: any;
+      user?: User;
     }
   }
 }
@@ -33,7 +34,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE']
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
   });
 
   closables.push(app);

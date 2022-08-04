@@ -12,11 +12,9 @@ import { AppAccountsController } from './app-accounts.controller';
     TypeOrmModule.forFeature([User]),
     // BullModule.registerQueueAsync(...queues(['account'])),
     BullModule.registerQueue({
-      name: 'account'
-    })
+      name: 'account',
+    }),
   ],
-  controllers: [
-    AppAccountsController
-  ],
+  controllers: [AppAccountsController],
 })
-export class AccountsModule { }
+export class AccountsModule {}
