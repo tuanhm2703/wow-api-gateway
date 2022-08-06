@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { nats } from '../config';
 import User from '@wow/models/account.model';
 import { AppAccountsController } from './app-accounts.controller';
+import { AddressController } from './address.controller';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { AppAccountsController } from './app-accounts.controller';
       name: 'account',
     }),
   ],
-  controllers: [AppAccountsController],
+  controllers: [AppAccountsController, AddressController],
 })
 export class AccountsModule {}

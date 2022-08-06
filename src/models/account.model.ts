@@ -6,7 +6,7 @@ export default class Account {
   @PrimaryColumn({ length: 255 })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column()
@@ -18,6 +18,18 @@ export default class Account {
 
   @Column({ default: false })
   isActive: boolean;
+
+  @Column({ nullable: true })
+  birthday: Date;
+
+  @Column({ nullable: true })
+  wardId: number;
+
+  @Column({ nullable: true })
+  detailsAddress: string;
+
+  @Column({ nullable: true })
+  socialMedias: string;
 
   @Column({ nullable: true })
   otp: string;

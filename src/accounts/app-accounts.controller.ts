@@ -8,6 +8,7 @@ import {
   Get,
   Request,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
@@ -84,6 +85,14 @@ export class AppAccountsController {
       throw new BadRequestException(error.message);
     }
   }
+  @Post('/verify-otp')
+  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
+    const data = await firstValueFrom(
+      this.natsService.send('account.verifyOtp', payload),
+    );
+    console.log('line 56 - data', data);
+    return data;
+  }
   @UseGuards(AccountGuard)
   @Get('/profile/general')
   @HttpCode(HttpStatus.OK)
@@ -97,13 +106,17 @@ export class AppAccountsController {
       return error;
     }
   }
-
-  @Post('verify-otp')
-  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
-    const data = await firstValueFrom(
-      this.natsService.send('account.verifyOtp', payload),
-    );
-    console.log('line 56 - data', data);
-    return data;
+  @UseGuards(AccountGuard)
+  @Put('/profile/general')
+  @HttpCode(HttpStatus.OK)
+  async updateGetGeneralProfileAccount(@Body() body) {
+    try {
+      const data = await firstValueFrom(
+        this.natsService.send('account.profile.general.update', body),
+      );
+      return data;
+    } catch (error) {
+      return error;
+    }
   }
 }
