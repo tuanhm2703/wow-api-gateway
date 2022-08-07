@@ -32,12 +32,12 @@ export const load = () => {
     },
 
     s3: {
-      endPoint: env.WOW_S3_HOST || 'localhost',
-      port: env.WOW_S3_PORT ? parseInt(env.WOW_S3_PORT, 10) : 9000,
+      endPoint: env.WOW_S3_HOST || 's3.ap-southeast-1.amazonaws.com',
+      // port: env.WOW_S3_PORT ? parseInt(env.WOW_S3_PORT, 10) : 9000,
       useSSL: getBoolOrDefault(env.WOW_S3_USE_SSL, false),
       accessKey: env.WOW_S3_ACCESS_KEY || 'testKey',
       secretKey: env.WOW_S3_SECRET_KEY || 'testSecretKey',
-      region: env.WOW_S3_REGION || 'us-east-1',
+      region: env.WOW_S3_REGION || 'ap-southeast-1',
 
       defaultBucket: env.WOW_S3_DEFAULT_BUCKET || '0a7d55be',
       defaultPublicPrefix: env.WOW_S3_DEFAULT_PUBLIC_PREFIX || 'public/',
