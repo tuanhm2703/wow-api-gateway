@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { env } from 'process';
+import { AccRepository } from '../../accounts/repositories/account.repository';
 
 @Injectable()
 export class AccountStrategy extends PassportStrategy(Strategy, 'account') {
-  constructor() {
+  constructor(private readonly accRepo: AccRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -14,6 +15,9 @@ export class AccountStrategy extends PassportStrategy(Strategy, 'account') {
   }
 
   async validate(payload: any) {
+    const acc = await this.accRepo.getAccountByEmailOrPhone(payload.username);
+    if (!acc || !acc.isActive)
+      throw new UnauthorizedException('Tài khoản này chưa được kích hoạt');
     return payload;
   }
 }

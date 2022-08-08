@@ -6,16 +6,19 @@ import { nats } from '../config';
 import User from '@wow/models/account.model';
 import { AppAccountsController } from './app-accounts.controller';
 import { AddressController } from './address.controller';
+import { AccRepository } from './repositories/account.repository';
+import Account from '@wow/models/account.model';
 
 @Module({
   imports: [
     NatsClientModule.registerAsync(nats()),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Account]),
     // BullModule.registerQueueAsync(...queues(['account'])),
     BullModule.registerQueue({
       name: 'account',
     }),
   ],
   controllers: [AppAccountsController, AddressController],
+  providers: [AccRepository],
 })
 export class AccountsModule {}

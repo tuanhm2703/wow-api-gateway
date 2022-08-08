@@ -9,6 +9,8 @@ import {
   Request,
   UseGuards,
   Put,
+  UnprocessableEntityException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
@@ -70,7 +72,9 @@ export class AppAccountsController {
       );
       return data;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error.statusCode === 422) {
+        throw new UnprocessableEntityException(error);
+      } else throw new BadRequestException(error.message);
     }
   }
   @Post('/exists')
