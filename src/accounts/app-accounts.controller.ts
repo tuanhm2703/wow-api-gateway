@@ -59,8 +59,10 @@ export class AppAccountsController {
       }
 
       return { data };
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (error) {
+      if (error.statusCode === 422) {
+        throw new UnprocessableEntityException(error);
+      } else throw new BadRequestException(error.message);
     }
   }
   @Post('/login')
@@ -113,8 +115,9 @@ export class AppAccountsController {
   @UseGuards(AccountGuard)
   @Put('/profile/general')
   @HttpCode(HttpStatus.OK)
-  async updateGetGeneralProfileAccount(@Body() body) {
+  async updateGetGeneralProfileAccount(@Body() body, @Request() req) {
     try {
+      body.username = req.user.username;
       const data = await firstValueFrom(
         this.natsService.send('account.profile.general.update', body),
       );

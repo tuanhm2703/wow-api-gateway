@@ -20,19 +20,7 @@ export default class Account {
   isActive: boolean;
 
   @Column({ nullable: true })
-  birthday: Date;
-
-  @Column({ nullable: true })
-  wardId: number;
-
-  @Column({ nullable: true })
-  detailsAddress: string;
-
-  @Column({ nullable: true })
-  socialMedias: string;
-
-  @Column({ nullable: true })
-  otp: string;
+  profileId: number;
 
   @Column({ type: 'timestamptz' })
   createdAt: Date;

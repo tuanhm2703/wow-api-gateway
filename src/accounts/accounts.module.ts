@@ -6,7 +6,6 @@ import { nats } from '../config';
 import User from '@wow/models/account.model';
 import { AppAccountsController } from './app-accounts.controller';
 import { AddressController } from './address.controller';
-import { AccRepository } from './repositories/account.repository';
 import Account from '@wow/models/account.model';
 
 @Module({
@@ -19,6 +18,6 @@ import Account from '@wow/models/account.model';
     }),
   ],
   controllers: [AppAccountsController, AddressController],
-  providers: [AccRepository],
+  providers: [],
 })
 export class AccountsModule {}

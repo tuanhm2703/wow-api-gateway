@@ -12,7 +12,7 @@ export class AccountProcessor {
   private readonly logger = new Logger(AccountProcessor.name);
 
   constructor(
-    @Inject('NOTIFICATION_SERVICE_NATS') private notificationNats: ClientNats,
+    @Inject('NOTIFICATION_SERVICE_NATS') private notificationNats: NatsClient,
   ) {}
 
   @Process('sendVerifyOtp')
@@ -23,9 +23,9 @@ export class AccountProcessor {
     const { phone, token } = data;
     console.log('sendVerifyOtp', phone, token);
 
-    await firstValueFrom(
-      this.notificationNats.send('notification.verifyOtp', {
-        phone,
+    const response = await firstValueFrom(
+      this.notificationNats.send('notification.sendOTP', {
+        username: phone,
         otp: token,
       }),
     );
