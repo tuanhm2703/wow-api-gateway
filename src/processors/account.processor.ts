@@ -20,12 +20,19 @@ export class AccountProcessor {
     const data = job.data;
     this.logger.log(`==== Executing [account][sendVerifyOtp][${job.id}] ====`);
 
-    const { phone, token } = data;
-    console.log('sendVerifyOtp', phone, token);
+    const { email, phone, token } = data;
+    let phoneNumber = phone;
+    if (phone) {
+      const region = '+84'; // hardecode for vietnam.
+      const isHasRegion = phone.indexOf(region) === 0;
+      phoneNumber = (isHasRegion && phone) || `${region}${phone}`;
+    }
+
+    console.log('sendVerifyOtp', data, email, phone, phoneNumber, token);
 
     const response = await firstValueFrom(
       this.notificationNats.send('notification.sendOTP', {
-        username: phone,
+        username: email || phoneNumber,
         otp: token,
       }),
     );

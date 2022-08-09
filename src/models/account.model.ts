@@ -9,7 +9,7 @@ export default class Account {
   @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude({ toPlainOnly: true })
   password: string;
 

@@ -49,6 +49,7 @@ export class AppAccountsController {
           {
             token: token.token,
             phone: data.phone,
+            email: data.email,
           },
           {
             removeOnComplete: true,
