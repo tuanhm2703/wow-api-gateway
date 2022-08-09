@@ -19,6 +19,7 @@ import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountGuard } from '@wow/auth/guards/account.guard';
 import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
 import { CheckUsernameDto } from './dto/check-username.dto';
+import { EmotionCheckinDto } from './dto/emotion-checkin.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -105,5 +106,10 @@ export class AppAccountsController {
     );
     console.log('line 56 - data', data);
     return data;
+  }
+
+  @Post('emotion-checkin')
+  async emotionCheckin(@Body() payload: EmotionCheckinDto) {
+    return await firstValueFrom(this.natsService.send('account.emotion.checkin', payload));
   }
 }
