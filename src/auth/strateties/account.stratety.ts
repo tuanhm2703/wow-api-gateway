@@ -1,11 +1,13 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { env } from 'process';
+import { NatsClient } from '@nestjs-ex/nats-strategy';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AccountStrategy extends PassportStrategy(Strategy, 'account') {
-  constructor() {
+  constructor(private readonly natsService: NatsClient) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -14,6 +16,11 @@ export class AccountStrategy extends PassportStrategy(Strategy, 'account') {
   }
 
   async validate(payload: any) {
+    const acc = await firstValueFrom(
+      this.natsService.send('account.profile.general', payload),
+    );
+    if (!acc || !acc.isActive)
+      throw new UnauthorizedException('Tài khoản này chưa được kích hoạt');
     return payload;
   }
 }

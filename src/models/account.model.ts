@@ -6,7 +6,7 @@ export default class Account {
   @PrimaryColumn({ length: 255 })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column()
@@ -20,7 +20,7 @@ export default class Account {
   isActive: boolean;
 
   @Column({ nullable: true })
-  otp: string;
+  profileId: number;
 
   @Column({ type: 'timestamptz' })
   createdAt: Date;

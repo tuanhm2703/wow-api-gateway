@@ -8,6 +8,9 @@ import {
   Get,
   Request,
   UseGuards,
+  Put,
+  UnprocessableEntityException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
@@ -56,8 +59,10 @@ export class AppAccountsController {
       }
 
       return { data };
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (error) {
+      if (error.statusCode === 422) {
+        throw new UnprocessableEntityException(error);
+      } else throw new BadRequestException(error.message);
     }
   }
   @Post('/login')
@@ -69,7 +74,11 @@ export class AppAccountsController {
       );
       return data;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      if (error.statusCode === 422) {
+        throw new UnprocessableEntityException(error);
+      } else if (error.statusCode === 401) {
+        throw new UnauthorizedException(error);
+      } else throw new BadRequestException(error.message);
     }
   }
   @Post('/exists')
@@ -84,6 +93,14 @@ export class AppAccountsController {
       throw new BadRequestException(error.message);
     }
   }
+  @Post('/verify-otp')
+  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
+    const data = await firstValueFrom(
+      this.natsService.send('account.verifyOtp', payload),
+    );
+    console.log('line 56 - data', data);
+    return data;
+  }
   @UseGuards(AccountGuard)
   @Get('/profile/general')
   @HttpCode(HttpStatus.OK)
@@ -97,13 +114,18 @@ export class AppAccountsController {
       return error;
     }
   }
-
-  @Post('verify-otp')
-  async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
-    const data = await firstValueFrom(
-      this.natsService.send('account.verifyOtp', payload),
-    );
-    console.log('line 56 - data', data);
-    return data;
+  @UseGuards(AccountGuard)
+  @Put('/profile/general')
+  @HttpCode(HttpStatus.OK)
+  async updateGetGeneralProfileAccount(@Body() body, @Request() req) {
+    try {
+      body.username = req.user.username;
+      const data = await firstValueFrom(
+        this.natsService.send('account.profile.general.update', body),
+      );
+      return data;
+    } catch (error) {
+      return error;
+    }
   }
 }
