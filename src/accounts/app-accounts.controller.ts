@@ -76,6 +76,8 @@ export class AppAccountsController {
     } catch (error) {
       if (error.statusCode === 422) {
         throw new UnprocessableEntityException(error);
+      } else if (error.statusCode === 401) {
+        throw new UnauthorizedException(error);
       } else throw new BadRequestException(error.message);
     }
   }
