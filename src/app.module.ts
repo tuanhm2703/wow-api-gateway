@@ -13,6 +13,7 @@ import { MeModule } from './me/me.module';
 import { AccountProcessor } from './processors';
 import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { MediaModule } from './media/media.module';
     AccountsModule,
     MeModule,
     AuthModule,
-    MediaModule
+    MediaModule,
+    SettingsModule
   ],
   controllers: [
     // PageController,
