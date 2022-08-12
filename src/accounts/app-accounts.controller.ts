@@ -131,8 +131,10 @@ export class AppAccountsController {
     }
   }
 
+  @UseGuards(AccountGuard)
   @Post('emotion-checkin')
-  async emotionCheckin(@Body() payload: EmotionCheckinDto) {
-    return await firstValueFrom(this.natsService.send('account.emotion.checkin', payload));
+  async emotionCheckin(@Body() payload: EmotionCheckinDto, @Request() req) {
+    const { user } = req;
+    return await firstValueFrom(this.natsService.send('account.emotion.checkin', {...payload, accountId: user.id }));
   }
 }

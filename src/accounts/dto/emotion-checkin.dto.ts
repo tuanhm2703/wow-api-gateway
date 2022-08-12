@@ -9,8 +9,8 @@ export class Emotion {
 }
 
 export class EmotionCheckinDto {
-  @ApiProperty({ required: true, example: 'ahsdjfkhs' })
-  accountId: string;
+  // @ApiProperty({ required: true, example: 'ahsdjfkhs' })
+  // accountId: string;
 
   @ApiProperty({ required: true, example: 'ISO String' })
   checkinDate: string;
