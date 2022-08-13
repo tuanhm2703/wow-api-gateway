@@ -23,6 +23,7 @@ import { AccountGuard } from '@wow/auth/guards/account.guard';
 import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
 import { CheckUsernameDto } from './dto/check-username.dto';
 import { EmotionCheckinDto } from './dto/emotion-checkin.dto';
+import { SendOTPDto } from './dto/send-otp.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -67,6 +68,7 @@ export class AppAccountsController {
       } else throw new BadRequestException(error.message);
     }
   }
+
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async loginAccount(@Body() acc: LoginAccountDto) {
@@ -83,6 +85,7 @@ export class AppAccountsController {
       } else throw new BadRequestException(error.message);
     }
   }
+
   @Post('/exists')
   @HttpCode(HttpStatus.OK)
   async checkValidUsername(@Body() body: CheckUsernameDto) {
@@ -95,14 +98,22 @@ export class AppAccountsController {
       throw new BadRequestException(error.message);
     }
   }
+
   @Post('/verify-otp')
   async verifyOTP(@Body() payload: VerifyAccountOTPDto) {
     const data = await firstValueFrom(
       this.natsService.send('account.verifyOtp', payload),
     );
-    console.log('line 56 - data', data);
     return data;
   }
+
+  @Post('resend-otp')
+  async sendOtp(@Body() body: SendOTPDto) {
+    const otp = await firstValueFrom(this.natsService.send('account.generateOtp', body));
+    await firstValueFrom(this.natsService.send('notification.sendOTP', { ...body, otp: otp.token }));
+    return {data: true};
+  }
+
   @UseGuards(AccountGuard)
   @Get('/profile/general')
   @HttpCode(HttpStatus.OK)
@@ -116,6 +127,7 @@ export class AppAccountsController {
       return error;
     }
   }
+
   @UseGuards(AccountGuard)
   @Put('/profile/general')
   @HttpCode(HttpStatus.OK)

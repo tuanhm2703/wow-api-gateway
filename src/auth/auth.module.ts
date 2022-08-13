@@ -8,6 +8,7 @@ import Account from '@wow/models/account.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { nats } from '@wow/config';
 import { NatsClientModule } from '@nestjs-ex/nats-strategy';
+import { AuthController } from './auth.controller';
 @Module({
   imports: [
     AccountsModule,
@@ -19,6 +20,7 @@ import { NatsClientModule } from '@nestjs-ex/nats-strategy';
     }),
     TypeOrmModule.forFeature([Account]),
   ],
+  controllers: [AuthController],
   providers: [AccountStrategy],
 })
 export class AuthModule {}
