@@ -1,3 +1,4 @@
+import { AppConsultationController } from './app-consultation.controller';
 import { NatsClientModule } from '@nestjs-ex/nats-strategy';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
@@ -17,7 +18,11 @@ import Account from '@wow/models/account.model';
       name: 'account',
     }),
   ],
-  controllers: [AppAccountsController, AddressController],
+  controllers: [
+    AppAccountsController,
+    AddressController,
+    AppConsultationController,
+  ],
   providers: [],
 })
 export class AccountsModule {}
