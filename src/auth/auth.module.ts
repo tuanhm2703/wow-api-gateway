@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { nats } from '@wow/config';
 import { NatsClientModule } from '@nestjs-ex/nats-strategy';
 import { AuthController } from './auth.controller';
+import { AnonymousStrategy } from './strateties/anonymous.strategy';
 @Module({
   imports: [
     AccountsModule,
@@ -21,6 +22,6 @@ import { AuthController } from './auth.controller';
     TypeOrmModule.forFeature([Account]),
   ],
   controllers: [AuthController],
-  providers: [AccountStrategy],
+  providers: [AccountStrategy, AnonymousStrategy],
 })
 export class AuthModule {}

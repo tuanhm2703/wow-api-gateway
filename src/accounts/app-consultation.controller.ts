@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AccountGuard } from '@wow/auth/guards/account.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('consultation')
 @Controller('api/v1/app/consultation')
@@ -54,10 +55,16 @@ export class AppConsultationController {
     );
   }
 
+  @UseGuards(AuthGuard(['account', 'anonymous']))
   @Get('questions/:questionId/comments')
-  async paginateComment(@Param('questionId') questionId) {
+  async paginateComment(@Param('questionId') questionId, @Request() req) {
+    const user = req.user;
+    const replyerId = user == null ? null : user.id;
     return await firstValueFrom(
-      this.natsService.send('consultation.question.comment', { questionId }),
+      this.natsService.send('consultation.question.comment', {
+        questionId,
+        replyerId,
+      }),
     );
   }
 
