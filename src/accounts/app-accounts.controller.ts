@@ -109,9 +109,16 @@ export class AppAccountsController {
 
   @Post('resend-otp')
   async sendOtp(@Body() body: SendOTPDto) {
-    const otp = await firstValueFrom(this.natsService.send('account.generateOtp', body));
-    await firstValueFrom(this.natsService.send('notification.sendOTP', { ...body, otp: otp.token }));
-    return {data: true};
+    const otp = await firstValueFrom(
+      this.natsService.send('account.generateOtp', body),
+    );
+    await firstValueFrom(
+      this.natsService.send('notification.sendOTP', {
+        ...body,
+        otp: otp.token,
+      }),
+    );
+    return { data: true };
   }
 
   @UseGuards(AccountGuard)
@@ -147,6 +154,11 @@ export class AppAccountsController {
   @Post('emotion-checkin')
   async emotionCheckin(@Body() payload: EmotionCheckinDto, @Request() req) {
     const { user } = req;
-    return await firstValueFrom(this.natsService.send('account.emotion.checkin', {...payload, accountId: user.id }));
+    return await firstValueFrom(
+      this.natsService.send('account.emotion.checkin', {
+        ...payload,
+        accountId: user.id,
+      }),
+    );
   }
 }
