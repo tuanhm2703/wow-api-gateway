@@ -37,6 +37,29 @@ export class AppConsultationController {
       this.natsService.send('consultation.question.create', payload),
     );
   }
+
+  @UseGuards(AccountGuard)
+  @Get('questions/favourite')
+  async paginateFavouriteList(@Request() req, @Query() query) {
+    const user = req.user;
+    query.accountId = user.id;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.favourite.paginate', query),
+    );
+  }
+
+  @UseGuards(AuthGuard(['account', 'anonymous']))
+  @Get('questions/:id')
+  async getOneQuestion(@Param('id') id, @Request() req) {
+    const user = req.user;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.getOne', {
+        questionId: id,
+        accountId: user.id || null,
+      }),
+    );
+  }
+
   @UseGuards(AccountGuard)
   @Put('questions/:id')
   async updateQuestion(@Body() payload, @Param('id') id) {
@@ -59,7 +82,7 @@ export class AppConsultationController {
   async addToFavourite(@Request() req, @Param('id') id) {
     const user = req.user;
     return await firstValueFrom(
-      this.natsService.send('consultation.question.favourite', {
+      this.natsService.send('consultation.question.favourite.add', {
         questionId: id,
         accountId: user.id,
       }),
