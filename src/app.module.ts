@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import * as configs from './config';
-// import { Event, EventSchema, Page, PageBlock, PageBlockSchema, PageSchema } from './models';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { MeModule } from './me/me.module';
-// import { PageController } from './controllers/page.controller';
-import { AccountProcessor } from './processors';
+import { AccountProcessor, RewardProcessor } from './processors';
 import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
 import { SettingsModule } from './settings/settings.module';
@@ -23,7 +21,6 @@ import { SettingsModule } from './settings/settings.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        // type: configService.get('WOW_DB_TYPE') as ,
         type: 'postgres',
         host: configService.get('WOW_DB_HOST'),
         port: +configService.get('WOW_DB_PORT'),
@@ -42,10 +39,13 @@ import { SettingsModule } from './settings/settings.module';
       }),
       inject: [ConfigService],
     }),
-    // ClientsModule.registerAsync(configs.grpcClients(['NOTIFICATION_SERVICE_GRPC'])),
 
     ClientsModule.registerAsync(
       configs.grpcClients(['NOTIFICATION_SERVICE_NATS']),
+    ),
+
+    ClientsModule.registerAsync(
+      configs.grpcClients(['ACCOUNT_SERVICE_NATS']),
     ),
 
     CoreModule.forRootAsync(),
@@ -59,6 +59,6 @@ import { SettingsModule } from './settings/settings.module';
   controllers: [
     // PageController,
   ],
-  providers: [AccountProcessor],
+  providers: [AccountProcessor, RewardProcessor],
 })
 export class AppModule {}

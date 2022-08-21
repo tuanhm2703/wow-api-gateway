@@ -77,6 +77,13 @@ export const load = () => {
         servers: natsServers,
       },
     } as ClientProvider,
+
+    ACCOUNT_SERVICE_NATS: {
+      transport: Transport.NATS,
+      options: {
+        servers: natsServers,
+      },
+    } as ClientProvider,
   };
 };
 

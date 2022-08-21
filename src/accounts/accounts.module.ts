@@ -14,9 +14,11 @@ import Account from '@wow/models/account.model';
     NatsClientModule.registerAsync(nats()),
     TypeOrmModule.forFeature([User, Account]),
     // BullModule.registerQueueAsync(...queues(['account'])),
-    BullModule.registerQueue({
+    BullModule.registerQueue(...[{
       name: 'account',
-    }),
+    }, {
+      name: 'reward'
+    }]),
   ],
   controllers: [
     AppAccountsController,

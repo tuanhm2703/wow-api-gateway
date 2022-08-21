@@ -33,9 +33,12 @@ export class AppConsultationController {
   @Post('questions')
   async createQuestion(@Body() payload, @Request() req) {
     payload.accountId = req.user.id;
-    return await firstValueFrom(
+    const question = await firstValueFrom(
       this.natsService.send('consultation.question.create', payload),
     );
+    await firstValueFrom(this.natsService.send('account.wallet.decrease-post-quota', { accountId: req.user.id }));
+
+    return question;
   }
 
   @UseGuards(AccountGuard)

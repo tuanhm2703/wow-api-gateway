@@ -31,6 +31,7 @@ export class AppAccountsController {
   constructor(
     private readonly natsService: NatsClient,
     @InjectQueue('account') private accountQueue: Queue,
+    @InjectQueue('reward') private rewardQueue: Queue,
   ) {}
 
   @Post()
@@ -144,7 +145,8 @@ export class AppAccountsController {
       const data = await firstValueFrom(
         this.natsService.send('account.profile.general.update', body),
       );
-      return data;
+      await this.rewardQueue.add('rewardUpdateProfile', {...body, accountId: req.user.id}, { removeOnComplete: true });
+      return body;
     } catch (error) {
       return error;
     }
