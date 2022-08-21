@@ -62,8 +62,9 @@ export class AppConsultationController {
 
   @UseGuards(AccountGuard)
   @Put('questions/:id')
-  async updateQuestion(@Body() payload, @Param('id') id) {
+  async updateQuestion(@Body() payload, @Param('id') id, @Request() req) {
     payload.id = id;
+    payload.ownerInfo = { questionId: id, accountId: req.user.id };
     return await firstValueFrom(
       this.natsService.send('consultation.question.update', payload),
     );
@@ -71,9 +72,12 @@ export class AppConsultationController {
 
   @UseGuards(AccountGuard)
   @Delete('questions/:id')
-  async deleteQuestion(@Param('id') id: string) {
+  async deleteQuestion(@Param('id') id: string, @Request() req) {
     return await firstValueFrom(
-      this.natsService.send('consultation.question.delete', { id }),
+      this.natsService.send('consultation.question.delete', {
+        id,
+        ownerInfo: { questionId: id, accountId: req.user.id },
+      }),
     );
   }
 
@@ -134,6 +138,7 @@ export class AppConsultationController {
     payload.questionId = params.questionId;
     payload.replyerId = req.user.id;
     payload.id = params.commentId;
+    payload.ownerInfo = { commentId: params.commentId, replyerId: req.user.id };
     return await firstValueFrom(
       this.natsService.send('consultation.question.comment.update', payload),
     );
@@ -164,12 +169,16 @@ export class AppConsultationController {
   }
 
   @UseGuards(AccountGuard)
-  @Delete('questions/:questionId/comments/:commentId/reactions/:reactionId')
-  async deleteReaction(@Param() params) {
+  @Delete('questions/:questionId/comments/:commentId/reactions')
+  async deleteReaction(@Param() params, @Request() req) {
     return await firstValueFrom(
       this.natsService.send('consultation.question.comment.reaction.delete', {
-        id: params.reactionId,
         commentId: params.commentId,
+        replyerId: req.user.id,
+        ownerInfo: {
+          reactionId: params.reactionId,
+          replyerId: req.user.id,
+        },
       }),
     );
   }
