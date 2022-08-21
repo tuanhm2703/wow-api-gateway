@@ -39,6 +39,28 @@ export class AppConsultationController {
   }
 
   @UseGuards(AccountGuard)
+  @Get('questions/favourite')
+  async paginateFavouriteList(@Request() req, @Query() query) {
+    const user = req.user;
+    query.accountId = user.id;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.favourite.paginate', query),
+    );
+  }
+
+  @UseGuards(AuthGuard(['account', 'anonymous']))
+  @Get('questions/:id')
+  async getOneQuestion(@Param('id') id, @Request() req) {
+    const user = req.user;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.getOne', {
+        questionId: id,
+        accountId: user.id || null,
+      }),
+    );
+  }
+
+  @UseGuards(AccountGuard)
   @Put('questions/:id')
   async updateQuestion(@Body() payload, @Param('id') id) {
     payload.id = id;
@@ -52,6 +74,30 @@ export class AppConsultationController {
   async deleteQuestion(@Param('id') id: string) {
     return await firstValueFrom(
       this.natsService.send('consultation.question.delete', { id }),
+    );
+  }
+
+  @UseGuards(AccountGuard)
+  @Post('questions/:id/favourite')
+  async addToFavourite(@Request() req, @Param('id') id) {
+    const user = req.user;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.favourite.add', {
+        questionId: id,
+        accountId: user.id,
+      }),
+    );
+  }
+
+  @UseGuards(AccountGuard)
+  @Delete('questions/:id/favourite')
+  async removeFromFavourite(@Request() req, @Param('id') id) {
+    const user = req.user;
+    return await firstValueFrom(
+      this.natsService.send('consultation.question.favourite.delete', {
+        questionId: id,
+        accountId: user.id,
+      }),
     );
   }
 
