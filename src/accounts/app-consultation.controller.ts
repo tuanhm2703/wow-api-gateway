@@ -139,6 +139,7 @@ export class AppConsultationController {
     payload.replyerId = req.user.id;
     payload.id = params.commentId;
     payload.ownerInfo = { commentId: params.commentId, replyerId: req.user.id };
+    
     return await firstValueFrom(
       this.natsService.send('consultation.question.comment.update', payload),
     );
@@ -175,10 +176,6 @@ export class AppConsultationController {
       this.natsService.send('consultation.question.comment.reaction.delete', {
         commentId: params.commentId,
         replyerId: req.user.id,
-        ownerInfo: {
-          reactionId: params.reactionId,
-          replyerId: req.user.id,
-        },
       }),
     );
   }
