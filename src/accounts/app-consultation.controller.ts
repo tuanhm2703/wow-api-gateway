@@ -22,6 +22,13 @@ export class AppConsultationController {
   [x: string]: any;
   constructor(private readonly natsService: NatsClient) {}
 
+  @Get('categories')
+  async getCategories() {
+    return await firstValueFrom(
+      this.natsService.send('consultation.category', {}),
+    );
+  }
+
   @Get('questions')
   async paginateQuestion(@Query() query) {
     return await firstValueFrom(
@@ -139,7 +146,7 @@ export class AppConsultationController {
     payload.replyerId = req.user.id;
     payload.id = params.commentId;
     payload.ownerInfo = { commentId: params.commentId, replyerId: req.user.id };
-    
+
     return await firstValueFrom(
       this.natsService.send('consultation.question.comment.update', payload),
     );
