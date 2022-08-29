@@ -24,6 +24,7 @@ import { VerifyAccountOTPDto } from './dto/verify-account-otp.dto';
 import { CheckUsernameDto } from './dto/check-username.dto';
 import { EmotionCheckinDto } from './dto/emotion-checkin.dto';
 import { SendOTPDto } from './dto/send-otp.dto';
+import { UpdateAccountDto } from './dto/update-account.dto';
 
 @ApiTags('account')
 @Controller('api/v1/app/account')
@@ -40,6 +41,10 @@ export class AppAccountsController {
     try {
       const data = await firstValueFrom(
         this.natsService.send('account.create', acc),
+      );
+
+      const updateProfileData = await firstValueFrom(
+        this.natsService.send('account.profile.general.update', acc),
       );
 
       // Send verify otp
@@ -61,6 +66,21 @@ export class AppAccountsController {
 
         delete data.tokens;
       }
+
+      return { data };
+    } catch (error) {
+      if (error.statusCode === 422) {
+        throw new UnprocessableEntityException(error);
+      } else throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() acc: UpdateAccountDto) {
+    try {
+      const data = await firstValueFrom(
+        this.natsService.send('account.update', acc),
+      );
 
       return { data };
     } catch (error) {
