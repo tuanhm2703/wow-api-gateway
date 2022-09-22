@@ -16,7 +16,10 @@ import { NatsClient } from '@nestjs-ex/nats-strategy';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
 import { JwtAuthGuard } from '@wow/shared/guards';
-import { ChangePasswordRequest, UpdateAccountByIdRequest } from './interface/account.interface';
+import {
+  ChangePasswordRequest,
+  UpdateAccountByIdRequest,
+} from './interface/account.interface';
 import { firstValueFrom } from 'rxjs';
 import { Queue } from 'bull';
 
@@ -28,7 +31,7 @@ export class MeController {
   constructor(
     private readonly natsService: NatsClient,
     @InjectQueue('account') private accountQueue: Queue,
-  ) { }
+  ) {}
 
   @Get()
   async findMe(@Req() req: any) {
@@ -36,7 +39,9 @@ export class MeController {
       throw new UnauthorizedException('invalid user!');
     }
 
-    const account = await this.natsService.send('account.getOne', req.user.id).toPromise();
+    const account = await this.natsService
+      .send('account.getOne', req.user.id)
+      .toPromise();
 
     return {
       data: account,
@@ -51,7 +56,9 @@ export class MeController {
 
     //accReq.id = req.user.id;
 
-    const data = await this.natsService.send('account.update', { ...accReq, id: req.user.id }).toPromise();
+    const data = await this.natsService
+      .send('account.update', { ...accReq, id: req.user.id })
+      .toPromise();
 
     return {
       data,
@@ -66,7 +73,9 @@ export class MeController {
     }
 
     accReq.emailAddress = req.user.emailAddress;
-    const data = await this.natsService.send('account.changePassword', accReq).toPromise();
+    const data = await this.natsService
+      .send('account.changePassword', accReq)
+      .toPromise();
     return data;
   }
 
@@ -77,21 +86,27 @@ export class MeController {
       throw new UnauthorizedException('invalid user!');
     }
 
-    const data = await firstValueFrom(this.natsService.send('account.recreateVerifyToken', {
-      accountId: req.user.id
-    }));
+    const data = await firstValueFrom(
+      this.natsService.send('account.recreateVerifyToken', {
+        accountId: req.user.id,
+      }),
+    );
 
     const tokens = data.tokens;
 
     if (Array.isArray(tokens) && tokens.length) {
       let token = tokens[0];
 
-      await this.accountQueue.add('sendVerifyEmail', {
-        token: token.token,
-        account: data
-      }, {
-        removeOnComplete: true,
-      });
+      await this.accountQueue.add(
+        'sendVerifyEmail',
+        {
+          token: token.token,
+          account: data,
+        },
+        {
+          removeOnComplete: true,
+        },
+      );
 
       delete data.tokens;
     }

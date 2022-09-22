@@ -44,9 +44,7 @@ import { SettingsModule } from './settings/settings.module';
       configs.grpcClients(['NOTIFICATION_SERVICE_NATS']),
     ),
 
-    ClientsModule.registerAsync(
-      configs.grpcClients(['ACCOUNT_SERVICE_NATS']),
-    ),
+    ClientsModule.registerAsync(configs.grpcClients(['ACCOUNT_SERVICE_NATS'])),
 
     CoreModule.forRootAsync(),
     SharedModule,
@@ -54,7 +52,7 @@ import { SettingsModule } from './settings/settings.module';
     MeModule,
     AuthModule,
     MediaModule,
-    SettingsModule
+    SettingsModule,
   ],
   controllers: [
     // PageController,
