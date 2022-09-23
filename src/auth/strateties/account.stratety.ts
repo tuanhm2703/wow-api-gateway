@@ -16,11 +16,16 @@ export class AccountStrategy extends PassportStrategy(Strategy, 'account') {
   }
 
   async validate(payload: any) {
-    const acc = await firstValueFrom(
-      this.natsService.send('account.profile.general', payload),
-    );
-    if (!acc || !acc.isActive)
-      throw new UnauthorizedException('Tài khoản này chưa được kích hoạt');
-    return payload;
+    try {
+      const acc = await firstValueFrom(
+        this.natsService.send('account.profile.general', payload),
+      );
+      if (!acc || !acc.isActive)
+        throw new UnauthorizedException('Tài khoản này chưa được kích hoạt');
+      return payload;
+    } catch (error) {
+      if (error.statusCode === 404)
+        throw new UnauthorizedException(error.message);
+    }
   }
 }

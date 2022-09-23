@@ -33,15 +33,22 @@ export class AdminAccountController {
   }
 
   @UseGuards(UserGuard)
+  @Post('create')
+  @HttpCode(HttpStatus.CREATED)
+  async createACcount(@Body() body) {
+    console.log(body);
+    return await firstValueFrom(
+      this.natsService.send('admin.account.create', body),
+    );
+  }
+
+  @UseGuards(UserGuard)
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  async getAccountById(@Param('id') id) {
+  async getAccountDetailsById(@Param('id') id) {
     return await firstValueFrom(
-      this.natsService.send('admin.account.getOneWithOptions', {
-        conditions: { id: id },
-        options: {
-          relations: ['profile'],
-        },
+      this.natsService.send('admin.account.details', {
+        id: id,
       }),
     );
   }
