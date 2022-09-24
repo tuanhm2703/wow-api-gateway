@@ -13,12 +13,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @ApiTags('account')
 @Controller('api/v1/admin/account')
 export class AdminAccountController {
   [x: string]: any;
-  constructor(private readonly natsService: NatsClient) {}
+  constructor(
+    private readonly natsService: NatsClient,
+    @InjectQueue('account') private accountQueue: Queue,
+  ) {}
 
   @UseGuards(UserGuard)
   @Post('paginate')
@@ -36,10 +41,20 @@ export class AdminAccountController {
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async createACcount(@Body() body) {
-    console.log(body);
-    return await firstValueFrom(
+    const acc = await firstValueFrom(
       this.natsService.send('admin.account.create', body),
     );
+    await this.accountQueue.add(
+      'sendWelcomeLetter',
+      {
+        email: acc.email,
+        name: acc.profile.name,
+      },
+      {
+        removeOnComplete: true,
+      },
+    );
+    return acc;
   }
 
   @UseGuards(UserGuard)
