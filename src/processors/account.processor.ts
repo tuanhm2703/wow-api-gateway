@@ -37,4 +37,19 @@ export class AccountProcessor {
       }),
     );
   }
+
+  @Process('sendWelcomeLetter')
+  async sendWelcomeLetter(job: Job) {
+    const data = job.data;
+
+    console.log(data);
+
+    const { email, name } = data;
+    const response = await firstValueFrom(
+      this.notificationNats.send('notification.sendWelcomeLetter', {
+        email,
+        name,
+      }),
+    );
+  }
 }

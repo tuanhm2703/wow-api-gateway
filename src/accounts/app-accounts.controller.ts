@@ -141,7 +141,6 @@ export class AppAccountsController {
     );
     return { data: true };
   }
-
   @UseGuards(AccountGuard)
   @Get('/profile/general')
   @HttpCode(HttpStatus.OK)
@@ -162,9 +161,15 @@ export class AppAccountsController {
   async updateGetGeneralProfileAccount(@Body() body, @Request() req) {
     try {
       body.username = req.user.username;
-      const data = await firstValueFrom(this.natsService.send('account.profile.general.update', body));
+      const data = await firstValueFrom(
+        this.natsService.send('account.profile.general.update', body),
+      );
       await firstValueFrom(this.natsService.send('account.update', body));
-      await this.rewardQueue.add('rewardUpdateProfile', {...body, accountId: req.user.id}, { removeOnComplete: true });
+      await this.rewardQueue.add(
+        'rewardUpdateProfile',
+        { ...body, accountId: req.user.id },
+        { removeOnComplete: true },
+      );
       return body;
     } catch (error) {
       return error;
@@ -173,6 +178,7 @@ export class AppAccountsController {
 
   @UseGuards(AccountGuard)
   @Post('emotion-checkin')
+  @HttpCode(HttpStatus.OK)
   async emotionCheckin(@Body() payload: EmotionCheckinDto, @Request() req) {
     const { user } = req;
     return await firstValueFrom(
