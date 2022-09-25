@@ -1,3 +1,5 @@
+import { AdminUserController } from './admin-user.controller';
+import { AdminAccountController } from './admin-account.controller';
 import { AppConsultationController } from './app-consultation.controller';
 import { NatsClientModule } from '@nestjs-ex/nats-strategy';
 import { BullModule } from '@nestjs/bull';
@@ -14,16 +16,23 @@ import Account from '@wow/models/account.model';
     NatsClientModule.registerAsync(nats()),
     TypeOrmModule.forFeature([User, Account]),
     // BullModule.registerQueueAsync(...queues(['account'])),
-    BullModule.registerQueue(...[{
-      name: 'account',
-    }, {
-      name: 'reward'
-    }]),
+    BullModule.registerQueue(
+      ...[
+        {
+          name: 'account',
+        },
+        {
+          name: 'reward',
+        },
+      ],
+    ),
   ],
   controllers: [
     AppAccountsController,
     AddressController,
     AppConsultationController,
+    AdminAccountController,
+    AdminUserController,
   ],
   providers: [],
 })

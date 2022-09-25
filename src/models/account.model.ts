@@ -22,6 +22,9 @@ export default class Account {
   @Column({ nullable: true })
   profileId: number;
 
+  @Column({ nullable: true })
+  role: string;
+
   @Column({ type: 'timestamptz' })
   createdAt: Date;
 

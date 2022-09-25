@@ -1,3 +1,4 @@
+import { UserStratety } from './strateties/user.stratety';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { AccountsModule } from '@wow/accounts/accounts.module';
@@ -22,6 +23,6 @@ import { AnonymousStrategy } from './strateties/anonymous.strategy';
     TypeOrmModule.forFeature([Account]),
   ],
   controllers: [AuthController],
-  providers: [AccountStrategy, AnonymousStrategy],
+  providers: [AccountStrategy, AnonymousStrategy, UserStratety],
 })
 export class AuthModule {}

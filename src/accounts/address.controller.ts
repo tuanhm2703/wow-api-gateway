@@ -14,12 +14,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { NatsClient } from '@nestjs-ex/nats-strategy';
 import { first, firstValueFrom } from 'rxjs';
 import { AccountGuard } from '@wow/auth/guards/account.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('account')
 @Controller('api/v1/app/address')
 export class AddressController {
   constructor(private readonly natsService: NatsClient) {}
-  @UseGuards(AccountGuard)
+
   @Get()
   @HttpCode(HttpStatus.OK)
   async getCityInfo(@Query() query) {

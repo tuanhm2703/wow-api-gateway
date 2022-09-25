@@ -43,7 +43,11 @@ export class AppConsultationController {
     const question = await firstValueFrom(
       this.natsService.send('consultation.question.create', payload),
     );
-    await firstValueFrom(this.natsService.send('account.wallet.decrease-post-quota', { accountId: req.user.id }));
+    await firstValueFrom(
+      this.natsService.send('account.wallet.decrease-post-quota', {
+        accountId: req.user.id,
+      }),
+    );
 
     return question;
   }
