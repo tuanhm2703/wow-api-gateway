@@ -188,4 +188,13 @@ export class AppAccountsController {
       }),
     );
   }
+
+  @UseGuards(AccountGuard)
+  @Get('settings/feelings')
+  @HttpCode(HttpStatus.OK)
+  async getFeelings() {
+    return await firstValueFrom(
+      this.natsService.send('consultation.feeling', {}),
+    );
+  }
 }
