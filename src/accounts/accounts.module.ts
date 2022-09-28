@@ -10,6 +10,7 @@ import User from '@wow/models/account.model';
 import { AppAccountsController } from './app-accounts.controller';
 import { AddressController } from './address.controller';
 import Account from '@wow/models/account.model';
+import { AdminConsultationController } from './admin-consultation.controller';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import Account from '@wow/models/account.model';
     AppConsultationController,
     AdminAccountController,
     AdminUserController,
+    AdminConsultationController
   ],
   providers: [],
 })
