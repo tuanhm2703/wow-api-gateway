@@ -1,3 +1,4 @@
+import { UpdateAccountPasswordDto } from './dto/update-account-password.dto';
 import {
   Controller,
   HttpCode,
@@ -87,6 +88,23 @@ export class AppAccountsController {
       if (error.statusCode === 422) {
         throw new UnprocessableEntityException(error);
       } else throw new BadRequestException(error.message);
+    }
+  }
+
+  @UseGuards(AccountGuard)
+  @Post('update-password')
+  async updatePassword(
+    @Body() payload: UpdateAccountPasswordDto,
+    @Request() request,
+  ) {
+    try {
+      const user = request.user;
+      payload['username'] = user.phone || user.email;
+      return await firstValueFrom(
+        this.natsService.send('account.updatePassword', payload),
+      );
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
