@@ -36,6 +36,8 @@ services:
       POSTGRES_DB: strapi
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapi
+    ports:
+      - "${CMS_POSTGRES_FORWARD_PORT:-5432}:5432"
     volumes:
       - ./data:/var/lib/postgresql/data
 
