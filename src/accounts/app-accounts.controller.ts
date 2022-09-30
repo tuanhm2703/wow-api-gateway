@@ -179,7 +179,7 @@ export class AppAccountsController {
   async updateGetGeneralProfileAccount(@Body() body, @Request() req) {
     try {
       body.username = req.user.username;
-      const data = await firstValueFrom(
+      await firstValueFrom(
         this.natsService.send('account.profile.general.update', body),
       );
       await firstValueFrom(this.natsService.send('account.update', body));
@@ -190,7 +190,7 @@ export class AppAccountsController {
       );
       return body;
     } catch (error) {
-      return error;
+      throw new BadRequestException(error);
     }
   }
 
