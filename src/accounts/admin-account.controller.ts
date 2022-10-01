@@ -28,14 +28,14 @@ export class AdminAccountController {
   ) {}
 
   @UseGuards(UserGuard)
-  @Post('paginate')
+  @Get('paginate')
   @HttpCode(HttpStatus.OK)
-  async paginateAccount(@Body() body) {
-    body.options = {
+  async paginateAccount(@Param() param) {
+    param.options = {
       relations: ['profile'],
     };
     return await firstValueFrom(
-      this.natsService.send('admin.account.paginate', body),
+      this.natsService.send('admin.account.paginate', param),
     );
   }
 
