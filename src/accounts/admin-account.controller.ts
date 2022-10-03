@@ -12,6 +12,8 @@ import {
   HttpStatus,
   UseGuards,
   Inject,
+  Delete,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
@@ -68,14 +70,14 @@ export class AdminAccountController {
   }
 
   @UseGuards(UserGuard)
-  @Post('paginate')
+  @Get('paginate')
   @HttpCode(HttpStatus.OK)
-  async paginateAccount(@Body() body) {
-    body.options = {
+  async paginateAccount(@Param() param) {
+    param.options = {
       relations: ['profile'],
     };
     return await firstValueFrom(
-      this.natsService.send('admin.account.paginate', body),
+      this.natsService.send('admin.account.paginate', param),
     );
   }
 
@@ -107,6 +109,26 @@ export class AdminAccountController {
       this.natsService.send('admin.account.details', {
         id: id,
       }),
+    );
+  }
+
+  @UseGuards(UserGuard)
+  @Put('/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateAccount(@Param('id') id, @Body() body) {
+    body.accountId = id;
+    console.log(body);
+    return await firstValueFrom(
+      this.natsService.send('admin.account.update', body),
+    );
+  }
+
+  @UseGuards(UserGuard)
+  @Delete('/:id')
+  @HttpCode(HttpStatus.OK)
+  async deleteAccount(@Param('id') id) {
+    return await firstValueFrom(
+      this.natsService.send('admin.account.delete', id),
     );
   }
 }

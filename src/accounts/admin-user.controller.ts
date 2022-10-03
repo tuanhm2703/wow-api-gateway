@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -35,6 +36,37 @@ export class AdminUserController {
   async userGetInfo(@Request() request) {
     return await firstValueFrom(
       this.natsService.send('admin.user.getOne', request.user.username),
+    );
+  }
+
+  @UseGuards(UserGuard)
+  @Post('/')
+  @HttpCode(HttpStatus.CREATED)
+  async createUser(@Body() body) {
+    try {
+      return await firstValueFrom(
+        this.natsService.send('admin.user.create', body),
+      );
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @UseGuards(UserGuard)
+  @Get('/paginate')
+  @HttpCode(HttpStatus.OK)
+  async paginateUser(@Param() param) {
+    return await firstValueFrom(
+      this.natsService.send('admin.user.paginate', param),
+    );
+  }
+
+  @UseGuards(UserGuard)
+  @Put('/:id')
+  async updateUser(@Body() body, @Param('id') id) {
+    body.id = id;
+    return await firstValueFrom(
+      this.natsService.send('admin.user.update', body),
     );
   }
 }
