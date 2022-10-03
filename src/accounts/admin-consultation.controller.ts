@@ -32,12 +32,8 @@ export class AdminConsultationController {
 
   @Get('questions/:id')
   async getOneQuestion(@Param('id') id, @Request() req) {
-    const user = req.user;
     return await firstValueFrom(
-      this.natsService.send('consultation.question.getOne', {
-        questionId: id,
-        accountId: user.id || null,
-      }),
+      this.natsService.send('consultation.admin.questions.getOne', { questionId: id }),
     );
   }
 }
